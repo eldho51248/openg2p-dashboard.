@@ -268,6 +268,47 @@ function sortByCountryPriority(programRows) {
   return [...programRows].sort((a, b) => countryPriority(a) - countryPriority(b));
 }
 
+// manual card order: everything next to the Ethiopia/EDRMC registered total
+// (457.0K) — Zambia, Zanzibar, and the rest of EDRMC's own figures — grouped
+// together, right after it. Anything not listed here (e.g. Farmer Registry)
+// keeps its normal position.
+const CUSTOM_CARD_ORDER = [
+  { country: 'Ethiopia', program: 'EDRMC', tag: 'Registered' },
+  { country: 'Zambia', program: 'Cash For Work', tag: 'Registered' },
+  { country: 'Zanzibar', program: 'Pension Program', tag: 'Registered' },
+  { country: 'Zanzibar', program: 'Pension Program', tag: 'Cash' },
+  { country: 'Ethiopia', program: 'EDRMC', tag: 'Cash' },
+  { country: 'Ethiopia', program: 'EDRMC - Returnee', tag: 'Meals' },
+  { country: 'Ethiopia', program: 'EDRMC - Returnee', tag: 'Transport' },
+];
+
+function cardOrderRank(cfg) {
+  return CUSTOM_CARD_ORDER.findIndex(
+    (o) => o.country === cfg.name && o.program === cfg.program && o.tag === cfg.tag
+  );
+}
+
+// Walks the configs in their normal order; the moment it reaches the first
+// card that belongs to CUSTOM_CARD_ORDER, it drops in the whole group
+// (in that fixed order) and skips the rest of the group as it passes them.
+// Every other card (e.g. Farmer Registry) keeps its original position.
+function applyCustomCardOrder(configs) {
+  const groupedBlock = CUSTOM_CARD_ORDER
+    .map((_, rank) => configs.find((cfg) => cardOrderRank(cfg) === rank))
+    .filter(Boolean);
+
+  const result = [];
+  let inserted = false;
+  configs.forEach((cfg) => {
+    if (cardOrderRank(cfg) !== -1) {
+      if (!inserted) { result.push(...groupedBlock); inserted = true; }
+    } else {
+      result.push(cfg);
+    }
+  });
+  return result;
+}
+
 function boardCellHTML({ tag, name, program, value, color, span }) {
   const spanStyle = span && span > 1 ? ` style="grid-column: span ${span}"` : '';
   return `
@@ -306,23 +347,24 @@ function renderCardsRow(programRows) {
         name: r.country,
         program: r.program,
         value: registeredValueHTML(formatCount(r.total)),
-        color: nextCardColor(),
       });
     }
     const disbursedProgram = r.program === 'EDRMC' ? 'EDRMC - Returnee' : r.program;
     if (r.cash !== null) {
       // Ethiopia's cash box drops the "- Returnee" suffix, unlike meals/transport
       const program = r.program === 'EDRMC' ? 'EDRMC' : disbursedProgram;
-      configs.push({ tag: 'Cash', name: r.country, program, value: moneyValueHTML(r.cash), color: nextCardColor() });
+      configs.push({ tag: 'Cash', name: r.country, program, value: moneyValueHTML(r.cash) });
     }
     if (r.meals !== null) {
-      configs.push({ tag: 'Meals', name: r.country, program: disbursedProgram, value: mealsValueHTML(r.meals.toLocaleString('en-US')), color: nextCardColor() });
+      configs.push({ tag: 'Meals', name: r.country, program: disbursedProgram, value: mealsValueHTML(r.meals.toLocaleString('en-US')) });
     }
     if (r.transport !== null) {
-      configs.push({ tag: 'Transport', name: r.country, program: disbursedProgram, value: transportValueHTML(String(r.transport)), color: nextCardColor() });
+      configs.push({ tag: 'Transport', name: r.country, program: disbursedProgram, value: transportValueHTML(String(r.transport)) });
     }
   });
-  const cells = applyRowSpans(configs).map(boardCellHTML);
+  const ordered = applyCustomCardOrder(configs);
+  ordered.forEach((cfg) => { cfg.color = nextCardColor(); });
+  const cells = applyRowSpans(ordered).map(boardCellHTML);
   row.innerHTML = cells.length
     ? cells.join('')
     : '<div class="board-cell board-cell-loading">No figures found.</div>';

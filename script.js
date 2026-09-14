@@ -131,6 +131,23 @@ function transportValueHTML(text) {
 }
 
 
+// globe icon, shown next to the Countries figure
+const GLOBE_ICON = `<svg class="globe-icon" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="14" cy="14" r="12" fill="none" stroke="currentColor" stroke-width="2"/>
+  <ellipse cx="14" cy="14" rx="5" ry="12" fill="none" stroke="currentColor" stroke-width="2"/>
+  <line x1="2" y1="14" x2="26" y2="14" stroke="currentColor" stroke-width="2"/>
+  <path d="M4.4 7.2c2.6 1.7 5.9 2.7 9.6 2.7s7-1 9.6-2.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  <path d="M4.4 20.8c2.6-1.7 5.9-2.7 9.6-2.7s7 1 9.6 2.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
+
+// stacked-modules icon, shown next to the Programs figure
+const PROGRAM_ICON = `<svg class="program-icon" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <rect x="2" y="2" width="10.5" height="10.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+  <rect x="15.5" y="2" width="10.5" height="10.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+  <rect x="2" y="15.5" width="10.5" height="10.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+  <rect x="15.5" y="15.5" width="10.5" height="10.5" rx="2.5" fill="currentColor"/>
+</svg>`;
+
 
 // ---- SHEET → DATA MODEL --------------------------------------------------
 
@@ -241,8 +258,8 @@ function renderBoardStats(summary) {
   const programsEl = document.getElementById('statPrograms');
   const countries = cleanNumber(summary.countries);
   const programs = cleanNumber(summary.programs);
-  if (countriesEl) animateCount(countriesEl, countries ?? 0);
-  if (programsEl) animateCount(programsEl, programs ?? 0);
+  if (countriesEl) animateCount(countriesEl, countries ?? 0, GLOBE_ICON);
+  if (programsEl) animateCount(programsEl, programs ?? 0, PROGRAM_ICON);
 }
 
 const CARD_PALETTE = ['yellow', 'orange', 'purple', 'blue'];
@@ -382,15 +399,18 @@ function renderOverall(summary) {
     : '–';
 }
 
-function animateCount(el, target) {
+// counts up into a nested span so the leading icon isn't wiped on every frame
+function animateCount(el, target, iconHTML) {
+  el.innerHTML = `${iconHTML || ''}<span class="count-text"></span>`;
+  const out = el.querySelector('.count-text');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedMotion) { el.textContent = target; return; }
+  if (prefersReducedMotion) { out.textContent = target; return; }
   const duration = 900;
   const start = performance.now();
   function tick(now) {
     const progress = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(eased * target);
+    out.textContent = Math.round(eased * target);
     if (progress < 1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
@@ -424,7 +444,7 @@ async function loadDashboard() {
     renderOverall(data.summary);
 
     const stamp = data.lastUpdated || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    statusEl.textContent = `Live · sheet updated ${stamp}`;
+    statusEl.textContent = `Live · Last updated ${stamp}`;
     statusEl.className = 'data-status-text is-live';
   } catch (err) {
     console.error('OpenG2P dashboard: failed to load sheet data', err);

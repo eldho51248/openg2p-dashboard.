@@ -1,43 +1,72 @@
+/* self-hosted Roboto (assets/Roboto) — variable, so one file covers every
+   weight the board uses. The comma in the filename is percent-encoded. */
+@font-face{
+  font-family:'Roboto';
+  src:url('assets/Roboto/Roboto-VariableFont_wdth%2Cwght.ttf') format('truetype-variations'),
+      url('assets/Roboto/Roboto-VariableFont_wdth%2Cwght.ttf') format('truetype');
+  font-weight:100 900;
+  font-stretch:75% 125%;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Roboto';
+  src:url('assets/Roboto/Roboto-Italic-VariableFont_wdth%2Cwght.ttf') format('truetype-variations'),
+      url('assets/Roboto/Roboto-Italic-VariableFont_wdth%2Cwght.ttf') format('truetype');
+  font-weight:100 900;
+  font-stretch:75% 125%;
+  font-style:italic;
+  font-display:swap;
+}
+
 /* =========================================================
-   OpenG2P Dashboard — design tokens
-   Color:  yellow #F4B41A · orange #EE7D22 · purple #8B4A8F · blue #1F4C81
-           bg #0B0B0C · surface #17171A · text #F5F3EE · muted #9A9AA0
-   Type:   display  Space Grotesk (headlines, tags)
-           body     Inter (paragraphs)
-           data     IBM Plex Mono (all numbers)
+   OpenG2P Dashboard — "in Action" board, black edition
+   Reference: assets/Frame 2.avif — solid brand-colour blocks
+   floating on pure black, serif headline + small sans caption.
+
+   Palette (taken straight off the reference):
+     yellow #F5B722 · orange #EE7D22 · purple #8B4A8F · blue #26517C
+   Type:
+     display  Instrument Serif — card names, board title
+     body     Inter — captions, chrome
+     data     Inter Tight — every number
    ========================================================= */
 
 :root{
-  --yellow:#FFDA87;
-  --yellow-light:#FFF3DD;
-  --orange:#F8B689;
-  --orange-light:#FDE3D2;
-  --purple:#D2AEDA;
-  --purple-light:#F1E4F4;
-  --blue:#9CC0E8;
-  --blue-light:#E8F1FB;
-  --blue-deep:#1B3D66;
-  --blue-pale:#EAF3FC;
-  --red:#C94040;
-  --gray:#BFC2C9;
-  --gray-light:#F4F5F6;
-  --green:#A9D8B4;
-  --green-light:#EDF9F0;
-  --bg:#FFFFFF;
-  --surface:#F7F7F8;
-  --surface-2:#EFEFF1;
-  --text:#1A1A1E;
-  --muted:#6B6B70;
-  --line:#E4E4E7;
+  /* card fills — solid, exactly as in the reference frame */
+  --yellow:#F5B722;
+  --orange:#EE7D22;
+  --purple:#8B4A8F;
+  --blue:#26517C;
 
-  --font-display:'Roboto', sans-serif;
-  --font-body:'Roboto', sans-serif;
-  --font-mono:'Roboto', sans-serif;
+  /* Two inks per fill, declared with the fills below: a strong one for the
+     headline figure and the name, and a tonal one — a deepened or lifted
+     shade of the fill itself — for the labels, so the type inside a block
+     is coloured rather than flat black. */
+
+  /* the masthead panels: a muted grey that fades out to nothing, so the
+     block dissolves into the black page at its left edge. All four panels
+     run the same way, left to right. */
+  --panel-rgb:92,94,102;
+
+  --bg:#000000;
+  --surface:#0E0E10;
+  --surface-2:#161619;
+  --text:#F7F6F3;
+  --muted:#8A8A90;
+  --line:#232327;
+
+  --font-brand:'Roboto', system-ui, sans-serif;
+  --font-display:'Roboto', system-ui, sans-serif;
+  --font-body:'Roboto', system-ui, sans-serif;
+  --font-mono:'Roboto', system-ui, sans-serif;
+
+  --radius:12px;
 }
 
 *{ box-sizing:border-box; }
 
-html{ scroll-behavior:smooth; height:100%; }
+html{ scroll-behavior:smooth; height:100%; background:var(--bg); }
 
 body{
   margin:0;
@@ -48,242 +77,326 @@ body{
   color:var(--text);
   font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
 
-main{
-  flex:1 1 auto;
-  display:flex;
-  flex-direction:column;
-}
+main{ flex:1 1 auto; display:flex; flex-direction:column; }
+
+a{ color:inherit; }
 
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
   *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
 }
 
-a{ color:inherit; }
-
 /* ---------- header ---------- */
 .site-header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:16px 20px;
-  border-bottom:1px solid var(--line);
+  gap:16px;
+  padding:18px clamp(16px, 3vw, 34px);
+  /* border-bottom:1px solid var(--line); */
 }
 
 .brand{ display:flex; align-items:center; gap:10px; }
-.brand-mark{ width:32px; height:32px; display:block; border-radius:50%; box-shadow:0 0 0 1px var(--line), 0 2px 6px rgba(0,0,0,0.08); }
-.brand-mark.small{ width:22px; height:22px; opacity:.85; }
-.brand-name{
-  font-family:var(--font-display);
-  font-size:1.15rem;
-  letter-spacing:0.01em;
-}
-.brand-name strong{ color:var(--yellow); font-weight:700; }
+/* the header carries the full lockup image — mark plus wordmark — so there
+   is no separate brand-name text beside it */
+.brand-lockup{ height:clamp(30px, 3vw, 40px); width:auto; display:block; }
+.brand-mark{ width:34px; height:34px; display:block; }
+.brand-mark.small{ width:22px; height:22px; opacity:.7; }
 
 .header-meta{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:9px;
   font-family:var(--font-mono);
   font-size:0.78rem;
   color:var(--muted);
+  letter-spacing:0.01em;
 }
 .live-dot{
   width:7px; height:7px; border-radius:50%;
   background:var(--yellow);
-  box-shadow:0 0 0 0 rgba(244,180,26,.6);
   animation:pulse 2.4s infinite;
 }
 @keyframes pulse{
-  0%{ box-shadow:0 0 0 0 rgba(244,180,26,.55); }
-  70%{ box-shadow:0 0 0 7px rgba(244,180,26,0); }
-  100%{ box-shadow:0 0 0 0 rgba(244,180,26,0); }
+  0%{ box-shadow:0 0 0 0 rgba(245,183,34,.55); }
+  70%{ box-shadow:0 0 0 8px rgba(245,183,34,0); }
+  100%{ box-shadow:0 0 0 0 rgba(245,183,34,0); }
 }
 
-/* ---------- board toolbar (live status) ---------- */
+/* ---------- board shell ---------- */
 .board-section{
   flex:1 1 auto;
   display:flex;
   flex-direction:column;
   width:100%;
-  padding:20px 0 24px;
+  padding:clamp(14px, 2vw, 24px) 0 28px;
 }
 
-.board-toolbar{
-  display:flex;
-  justify-content:flex-end;
-  padding:0 16px;
-  margin-bottom:14px;
-}
-.data-status{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.data-status-text{
-  font-family:var(--font-mono);
-  font-size:0.76rem;
-  color:var(--muted);
-}
-.data-status-text.is-live{ color:var(--yellow); }
-.data-status-text.is-error{ color:#e06666; }
-
-.refresh-btn{
-  font-family:var(--font-mono);
-  font-size:0.76rem;
-  color:var(--text);
-  background:var(--surface);
-  border:1px solid var(--line);
-  border-radius:4px;
-  padding:6px 12px;
-  cursor:pointer;
-  transition:background .15s ease, border-color .15s ease;
-}
-.refresh-btn:hover{ background:var(--surface-2); border-color:#3a3a40; }
-.refresh-btn:disabled{ opacity:0.5; cursor:default; }
-
-/* ---------- BOARD (solid color cards, per reference palette) ---------- */
+/* ---------- the board ---------- */
 .board{
   flex:1 1 auto;
   display:flex;
   flex-direction:column;
   justify-content:center;
+  gap:12px;
   width:100%;
-  padding:0 16px;
+  padding:0 clamp(16px, 3vw, 34px);
   background:var(--bg);
   color:var(--text);
-  border:none;
-  font-family:var(--font-display);
 }
 
-/* top row: title (left) + Countries / Programs stat boxes (right) */
-.board-top{
+/* ----- masthead: identity on the left, headline totals on the right -----
+   The two "Overall" figures used to sit in a dark rail beside the grid,
+   where they read as muddy next to the solid blocks. They're the biggest
+   numbers on the page, so they're set here as bare editorial figures — no
+   box to dilute them — which also fills the dead space beside the title. */
+.masthead{
   display:flex;
-  flex-wrap:wrap;
+  flex-direction:column;
   align-items:stretch;
-  gap:8px;
-  margin-bottom:8px;
+  gap:clamp(16px, 2vw, 26px);
+  padding:clamp(6px, 1vw, 14px) 0 clamp(18px, 2.2vw, 26px);
+  border-bottom:1px solid var(--line);
+  margin-bottom:clamp(16px, 2vw, 24px);
 }
-.board-title{
-  flex:2 1 320px;
+
+.masthead-id{
   display:flex;
   align-items:center;
-  margin:0;
-  padding:clamp(16px, 2.4vw, 22px) clamp(20px, 3vw, 34px);
-  font-size:clamp(2.75rem, 4vw, 3.55rem);
-  font-weight:700;
-  border-radius:22px;
-  background:linear-gradient(to right, var(--yellow-light), var(--yellow));
-  color:#141414;
+  gap:clamp(12px, 1.6vw, 20px);
+  min-width:0;
 }
 .board-title-logo{
-  width:clamp(67px, 8vw, 99px);
-  height:clamp(67px, 8vw, 99px);
+  width:clamp(64px, 7vw, 104px);
+  height:clamp(64px, 7vw, 104px);
   flex-shrink:0;
   display:block;
-  border-radius:50%;
-  box-shadow:0 0 0 1px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.12);
 }
-.board-title-text{
-  flex:1 1 auto;
-  text-align:center;
+.masthead-words{ min-width:0; }
+/* brand masthead: Poppins Bold, white with "Action" in the OpenG2P yellow */
+.board-title{
+  margin:0;
+  font-family:var(--font-brand);
+  font-weight:700;
+  font-size:clamp(2.4rem, 4.2vw, 4rem);
+  line-height:1.04;
+  letter-spacing:-0.02em;
+  color:var(--text);
 }
-.board-top-stats{ display:flex; flex:2 1 320px; gap:10px; }
-.stat-box{
+.title-accent{ color:var(--yellow); }
+.title-action{ color:var(--orange); }
+
+.masthead-meta{
   display:flex;
-  flex:1 1 0;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:10px 0 0;
+  font-size:0.8rem;
+  color:var(--muted);
+}
+.data-status-text{
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+  color:var(--muted);
+}
+.data-status-text.is-live{ color:var(--yellow); }
+.data-status-text.is-error{ color:#E06666; }
+
+.refresh-btn{
+  font-family:var(--font-mono);
+  font-size:0.72rem;
+  color:var(--muted);
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:4px 11px;
+  cursor:pointer;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;
+}
+.refresh-btn:hover{ background:var(--surface); border-color:#3A3A40; color:var(--yellow); }
+.refresh-btn:disabled{ opacity:0.45; cursor:default; }
+
+/* the four headline figures — light-grey blocks, so they read as the board's
+   summary rather than as more of the coloured programme cards. The gradient
+   runs outward from each pair: left-to-right on Countries and Registered
+   Overall, right-to-left on Programs and Cash Overall. */
+.masthead-totals{
+  display:flex;
+  align-items:stretch;
+  flex-wrap:nowrap;
+  gap:12px;
+  width:100%;
+}
+.total{
+  display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   gap:6px;
-  padding:clamp(20px, 3vw, 34px) clamp(20px, 4vw, 40px);
-  min-width:160px;
-  border-radius:22px;
-  background:linear-gradient(to left, var(--gray-light), var(--gray));
-  color:#141414;
-}
-.stat-box:nth-child(even){
-  background:linear-gradient(to left, var(--gray-light), var(--gray));
-  color:#141414;
-}
-.stat-label{ font-size:1.75rem; font-weight:700; }
-.stat-value{ font-family:var(--font-display); font-size:clamp(3.95rem, 9vw, 6.15rem); font-weight:700; line-height:1; }
-
-/* body: rows of cards on the left, Overall panels on the right */
-.board-main{ flex:1 1 auto; display:flex; flex-wrap:wrap; gap:10px; }
-.board-rows{ flex:1 1 480px; display:flex; flex-direction:column; gap:10px; }
-.board-row{
+  padding:clamp(14px, 1.5vw, 20px) clamp(16px, 1.7vw, 24px);
+  border-radius:var(--radius);
+  text-align:center;
   flex:1 1 0;
+  min-width:0;
+  color:var(--text);
+}
+
+.total-countries,
+.total-registered{
+  background:linear-gradient(to right,
+    rgba(var(--panel-rgb), 0) 0%,
+    rgba(var(--panel-rgb), 0.30) 45%,
+    rgba(var(--panel-rgb), 0.80) 100%);
+}
+
+.total-programs,
+.total-cash{
+  background:linear-gradient(to right,
+    rgba(var(--panel-rgb), 0) 0%,
+    rgba(var(--panel-rgb), 0.30) 45%,
+    rgba(var(--panel-rgb), 0.80) 100%);
+}
+
+/* each figure keeps its own accent — the panel behind it is neutral so the
+   colour is what tells the four apart */
+.total-countries{  color:#7FB0E8; }
+.total-programs{   color:#FF9440; }
+.total-registered{ color:var(--yellow); }
+.total-cash{       color:#C98FD0; }
+
+.total-label{
+  font-family:var(--font-body);
+  font-size:clamp(1.2rem, 1.7vw, 2.1rem);
+  font-weight:800;
+  letter-spacing:0.07em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  color:#E7E8EC;
+}
+.total-value{
+  font-family:var(--font-mono);
+  font-weight:700;
+  font-size:5.2vw;
+  line-height:0.95;
+  letter-spacing:-0.04em;
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:inherit;
+}
+/* the icon pins to the panel's left edge; the figure itself stays centred on
+   the panel, rather than the icon + figure being centred together */
+.total-value > svg{
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+}
+/* icons in the four headline figures, sized off the figure itself */
+.globe-icon{ width:0.8em; height:0.8em; flex-shrink:0; }
+.program-icon{ width:0.78em; height:0.78em; flex-shrink:0; }
+
+/* ----- the grid: full width, four solid blocks across ----- */
+.board-row{
+  flex:1 1 auto;
   display:grid;
   grid-template-columns:repeat(4, 1fr);
-  gap:10px;
+  gap:12px;
 }
 .board-row:empty{ display:none; }
 
-/* a fixed 4-column grid — always exactly 4 per row, never a ragged wrap.
-   an incomplete last row has its cards' grid-column spans widened in JS
-   (applyRowSpans) so there's never an empty gap. */
+/* one card = one solid brand block, exactly the reference's anatomy:
+   small caption label on top, headline underneath. Here the headline is
+   the figure, so it gets the display weight. */
 .board-cell{
-  padding:22px 18px;
-  border-radius:22px;
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
-  text-align:center;
-  gap:8px;
-  min-height:160px;
   justify-content:center;
+  gap:5px;
+  padding:clamp(10px, 1.1vw, 14px) clamp(12px, 1.3vw, 16px);
+  min-height:0;
+  text-align:center;
+  border-radius:var(--radius);
+  overflow:hidden;
+  color:var(--ink);
+  transition:transform .18s ease, box-shadow .18s ease;
 }
+.board-cell:hover{ transform:translateY(-2px); }
+
 .cell-tag{
-  font-family:var(--font-display);
-  font-size:1.3rem;
-  font-weight:600;
-  opacity:0.85;
-}
-.cell-name{
-  font-weight:500;
-  font-size:1.6rem;
-  text-decoration:underline;
-  text-underline-offset:2px;
-}
-.cell-program{
+  order:4;
   font-family:var(--font-body);
-  font-weight:500;
-  font-size:1.045rem;
-  opacity:0.75;
+  font-size:clamp(0.82rem, 0.95vw, 1rem);
+  font-weight:700;
+  letter-spacing:0.11em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  align-self:center;
+  text-align:center;
 }
 .cell-value{
+  order:3;
+  font-family:var(--font-mono);
+  font-weight:700;
+  font-size:clamp(2rem, 3.4vw, 2.9rem);
+  line-height:1;
+  letter-spacing:-0.035em;
+  /* three columns, the outer two equal: the figure sits in the middle one so
+     it stays centred on the card, while the icon rides in the left column
+     hard against it rather than out at the card's edge. */
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  column-gap:0;
+  width:100%;
+  align-self:center;
+  text-align:center;
+}
+/* centred within the left column, i.e. midway between the card's left edge
+   and the figure, rather than hard against either */
+.cell-value > svg{ justify-self:center; }
+.cell-name{
+  order:1;
   font-family:var(--font-display);
   font-weight:700;
-  font-size:clamp(2.425rem, 5vw, 3.625rem);
-  line-height:1.05;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:0.14em;
+  font-size:clamp(1.45rem, 1.9vw, 1.95rem);
+  line-height:1.08;
+  text-decoration:none;
+  align-self:center;
+  text-align:center;
 }
-.currency-icon{
-  width:0.8em;
-  height:0.5em;
-  flex-shrink:0;
+.cell-program{
+  order:2;
+  font-family:var(--font-body);
+  font-weight:800;
+  font-size:0.94rem;
+  line-height:1.28;
+  color:var(--ink);
+  margin-top:-6px;
+  align-self:center;
+  text-align:center;
 }
-.register-icon{
-  width:0.62em;
-  height:0.72em;
-  flex-shrink:0;
-}
-.meals-icon{
-  width:0.62em;
-  height:0.62em;
-  flex-shrink:0;
-}
-.transport-icon{
-  width:0.85em;
-  height:0.6em;
-  flex-shrink:0;
-}
+
+.currency-icon{ width:0.8em; height:0.5em; flex-shrink:0; }
+.register-icon{ width:0.62em; height:0.72em; flex-shrink:0; }
+.meals-icon{ width:0.62em; height:0.62em; flex-shrink:0; }
+.transport-icon{ width:0.85em; height:0.6em; flex-shrink:0; }
+
+/* the eight programme cards carry noticeably larger icons than the headline
+   panels do — scoped to .board-cell so the masthead figures keep theirs */
+.board-cell .currency-icon{  width:1.15em; height:0.72em; }
+.board-cell .register-icon{  width:0.9em;  height:1.04em; }
+.board-cell .meals-icon{     width:0.9em;  height:0.9em; }
+.board-cell .transport-icon{ width:1.22em; height:0.86em; }
+
 .board-cell-loading{
   grid-column:1 / -1;
   align-items:center;
@@ -293,58 +406,55 @@ a{ color:inherit; }
   font-family:var(--font-mono);
   font-size:0.85rem;
   background:var(--surface);
+  border:1px dashed var(--line);
 }
 
-/* per-type fills — a different color per card, left-to-right gradient */
-.cell-yellow{ background:linear-gradient(to right, var(--yellow-light), var(--yellow)); color:#141414; }
-.cell-orange{ background:linear-gradient(to right, var(--orange-light), var(--orange)); color:#141414; }
-.cell-purple{ background:linear-gradient(to right, var(--purple-light), var(--purple)); color:#141414; }
-.cell-blue{ background:linear-gradient(to right, var(--blue-light), var(--blue)); color:#141414; }
-
-.board-overall{
-  flex:0 0 260px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-self:stretch;
+/* per-type fills — each block is its brand colour at full strength along the
+   top, thinning to a translucent wash at the bottom so it bleeds into the
+   black page. Each carries a contrasting pair of inks.
+   The type doesn't tint toward its own fill; it crosses the palette. The two
+   warm blocks are set in deep indigo-purple, the two cool blocks in gold, so
+   every card is a complement of itself. Every pairing clears 4.5:1, with the
+   small label given the higher-contrast value of each pair. */
+.cell-yellow{
+  background:linear-gradient(to bottom, rgba(245,183,34,1) 0%, rgba(245,183,34,0.70) 100%);
+  --ink:#4A1E50; --ink-soft:#6B3573;
 }
-.overall-box{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  padding:clamp(20px, 3vw, 34px) clamp(20px, 4vw, 40px);
-  text-align:center;
-  border-radius:22px;
+.cell-orange{
+  background:linear-gradient(to bottom, rgba(238,125,34,1) 0%, rgba(238,125,34,0.62) 100%);
+  --ink:#FFFFFF; --ink-soft:#FFFFFF;
 }
-.overall-yellow{ background:linear-gradient(to right, var(--green-light), var(--green)); color:#141414; }
-.overall-purple{ background:linear-gradient(to right, var(--green-light), var(--green)); color:#141414; }
-.overall-label{ font-weight:500; font-size:1.65rem; text-decoration:underline; text-underline-offset:2px; }
-.overall-value{
-  font-family:var(--font-display);
-  font-weight:700;
-  font-size:clamp(3.0125rem, 5.6vw, 4.4125rem);
-  line-height:1.05;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:0.14em;
+.cell-purple{
+  background:linear-gradient(to bottom, rgba(139,74,143,1) 0%, rgba(139,74,143,0.58) 100%);
+  --ink:#FFFFFF; --ink-soft:#FFFFFF;
+}
+.cell-blue{
+  background:linear-gradient(to bottom, rgba(38,81,124,1) 0%, rgba(38,81,124,0.58) 100%);
+  --ink:#FFC79B; --ink-soft:#FDD0A8;
 }
 
-@media (max-width:720px){
-  .board-top{ flex-direction:column; }
-  .board-overall{ flex-direction:row; }
-}
+.cell-yellow:hover{ box-shadow:0 14px 44px -14px rgba(245,183,34,.55); }
+.cell-orange:hover{ box-shadow:0 14px 44px -14px rgba(238,125,34,.55); }
+.cell-purple:hover{ box-shadow:0 14px 44px -14px rgba(139,74,143,.7); }
+.cell-blue:hover{   box-shadow:0 14px 44px -14px rgba(38,81,124,.85); }
 
+/* the eight programme cards carry noticeably larger icons than the headline
+   panels do — scoped to .board-cell so the masthead figures keep theirs */
+.board-cell .currency-icon{  width:1.15em; height:0.72em; }
+.board-cell .register-icon{  width:0.9em;  height:1.04em; }
+.board-cell .meals-icon{     width:0.9em;  height:0.9em; }
+.board-cell .transport-icon{ width:1.22em; height:0.86em; }
+
+.board-cell-loading{ --ink:var(--muted); --ink-soft:var(--muted); }
+
+/* ---------- error note ---------- */
 .data-error{
-  margin:16px 16px 0;
+  margin:16px clamp(16px, 3vw, 34px) 0;
   padding:14px 18px;
-  background:rgba(224,102,102,0.1);
-  border:1px solid rgba(224,102,102,0.35);
-  border-radius:6px;
-  color:#e79a9a;
+  background:rgba(224,102,102,0.08);
+  border:1px solid rgba(224,102,102,0.3);
+  border-radius:var(--radius);
+  color:#E79A9A;
   font-size:0.85rem;
   line-height:1.5;
 }
@@ -354,27 +464,26 @@ a{ color:inherit; }
   display:flex;
   align-items:center;
   gap:10px;
-  padding:22px 16px 32px;
+  padding:22px clamp(16px, 3vw, 34px) 32px;
   color:var(--muted);
   font-size:0.8rem;
-  border-top:1px solid var(--line);
+  /* border-top:1px solid var(--line); */
 }
-.site-footer code{
-  font-family:var(--font-mono);
-  background:var(--surface);
-  padding:1px 6px;
-  border-radius:3px;
-}
+.site-footer a{ color:var(--muted); text-decoration:underline; text-underline-offset:2px; }
+.site-footer a:hover{ color:var(--yellow); }
 
 /* ---------- responsive ---------- */
-@media (max-width: 560px){
+@media (max-width: 1000px){
+  .board-row{ grid-template-columns:repeat(3, 1fr); }
+  .board-cell{ grid-column:auto !important; }
+}
+@media (max-width: 720px){
   .board-row{ grid-template-columns:repeat(2, 1fr); }
-  .board-cell:nth-child(4n){ border-right:1px solid var(--line); }
-  .board-cell:nth-child(2n){ border-right:none; }
+  .masthead-totals{ flex-direction:column; gap:16px; }
 }
 
 /* keyboard focus visibility */
 a:focus-visible, button:focus-visible{
   outline:2px solid var(--yellow);
-  outline-offset:2px;
+  outline-offset:3px;
 }

@@ -1,0 +1,107 @@
+# OpenG2P in Action — dashboard (static site served by nginx)
+#
+# Deploy:  kubectl apply -f deploy/dashboard.yaml
+# Verify:  kubectl -n dom rollout status deploy/openg2p-dashboard
+# URL:     https://dashboard.dom.openg2p.org
+#
+# Routing follows the cluster convention: an istio VirtualService bound to the
+# existing `internal` Gateway, which already serves *.dom.openg2p.org and
+# handles the HTTPS redirect + certs — no Gateway change needed.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openg2p-dashboard
+  namespace: dom
+  labels:
+    app.kubernetes.io/name: openg2p-dashboard
+    app.kubernetes.io/instance: openg2p-dashboard
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openg2p-dashboard
+      app.kubernetes.io/instance: openg2p-dashboard
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openg2p-dashboard
+        app.kubernetes.io/instance: openg2p-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: eyuaelb/openg2p-dashboard:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openg2p-dashboard
+  namespace: dom
+  labels:
+    app.kubernetes.io/name: openg2p-dashboard
+    app.kubernetes.io/instance: openg2p-dashboard
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: openg2p-dashboard
+    app.kubernetes.io/instance: openg2p-dashboard
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: openg2p-dashboard
+  namespace: dom
+  labels:
+    app.kubernetes.io/name: openg2p-dashboard
+    app.kubernetes.io/instance: openg2p-dashboard
+spec:
+  gateways:
+    - internal
+  hosts:
+    - dashboard.dom.openg2p.org
+  http:
+    - headers:
+        request:
+          set:
+            x-forwarded-host: dashboard.dom.openg2p.org
+            x-forwarded-proto: https
+      match:
+        - uri:
+            prefix: /
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: openg2p-dashboard
+            port:
+              number: 80

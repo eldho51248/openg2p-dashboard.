@@ -4,18 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenG2P in Action — Dashboard</title>
-<link rel="icon" href="assets/logo.png?v=3" type="image/png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="assets/for_logo_icon.png?v=44" type="image/png">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="style.css?v=49">
 </head>
 <body>
 
   <!-- ===== HEADER ===== -->
   <header class="site-header">
     <div class="brand">
-      <img src="assets/logo.png" alt="OpenG2P" class="brand-mark">
-      <span class="brand-name">Open<strong>G2P</strong></span>
+      <img src="assets/for%20dark%20top.png" alt="OpenG2P" class="brand-lockup">
     </div>
     <nav class="header-meta">
       <span class="live-dot" aria-hidden="true"></span>
@@ -27,49 +25,44 @@
     <!-- ===== BOARD (spreadsheet-style, matches the mockup) ===== -->
     <section class="board-section">
 
-      <div class="board-toolbar">
-        <div class="data-status">
-          <span id="dataStatus" class="data-status-text">Loading live data…</span>
-          <button id="refreshBtn" type="button" class="refresh-btn" aria-label="Refresh data">&#8635; Refresh</button>
-        </div>
-      </div>
-
       <div class="board" id="board">
-        <!-- top row: title (left) + Countries/Programs stat boxes (right) -->
-        <div class="board-top">
-          <h1 class="board-title">
-            <img src="assets/logo.png" alt="" class="board-title-logo">
-            <span class="board-title-text">OpenG2P in Action</span>
-          </h1>
-          <div class="board-top-stats">
-            <div class="stat-box">
-              <span class="stat-label">Countries</span>
-              <span class="stat-value" id="statCountries">–</span>
+
+        <!-- masthead: identity + the two headline totals -->
+        <div class="masthead">
+          <div class="masthead-id">
+            <img src="assets/for_logo_icon.png" alt="" class="board-title-logo">
+            <div class="masthead-words">
+              <h1 class="board-title">Open<span class="title-accent">G2P</span> in <span class="title-action">Action</span></h1>
+              <p class="masthead-meta">
+                <span id="dataStatus" class="data-status-text">Loading live data…</span>
+                <button id="refreshBtn" type="button" class="refresh-btn" aria-label="Refresh data">&#8635; Refresh</button>
+              </p>
             </div>
-            <div class="stat-box">
-              <span class="stat-label">Programs</span>
-              <span class="stat-value" id="statPrograms">–</span>
+          </div>
+
+          <div class="masthead-totals">
+            <div class="total total-countries">
+              <span class="total-label">Countries</span>
+              <span class="total-value" id="statCountries">–</span>
+            </div>
+            <div class="total total-programs">
+              <span class="total-label">Programs</span>
+              <span class="total-value" id="statPrograms">–</span>
+            </div>
+            <div class="total total-registered">
+              <span class="total-label">Registered Overall</span>
+              <span class="total-value" id="overallRegistered">–</span>
+            </div>
+            <div class="total total-cash">
+              <span class="total-label">Cash Overall</span>
+              <span class="total-value" id="overallCash">–</span>
             </div>
           </div>
         </div>
 
-        <!-- body: Overall panels on the left, rows of cards on the right -->
-        <div class="board-main">
-          <div class="board-overall">
-            <div class="overall-box overall-yellow">
-              <span class="overall-label">Registered Overall</span>
-              <span class="overall-value" id="overallRegistered">–</span>
-            </div>
-            <div class="overall-box overall-purple">
-              <span class="overall-label">Cash Overall</span>
-              <span class="overall-value" id="overallCash">–</span>
-            </div>
-          </div>
-          <div class="board-rows" id="boardRows">
-            <div class="board-row" id="cardsRow">
-              <div class="board-cell board-cell-loading">Loading…</div>
-            </div>
-          </div>
+        <!-- the grid -->
+        <div class="board-row" id="cardsRow">
+          <div class="board-cell board-cell-loading">Loading…</div>
         </div>
       </div>
 
@@ -81,10 +74,10 @@
   </main>
 
   <footer class="site-footer">
-    <img src="assets/logo.png" alt="" class="brand-mark small">
+    <img src="assets/for_logo_icon.png" alt="" class="brand-mark small">
     <p>OpenG2P Dashboard &middot; live data from <a href="https://docs.google.com/spreadsheets/d/177tN9JXNex-mbifRFAH9ccm85az7JGlGvmScthMNTO0/edit?gid=1006734973" target="_blank" rel="noopener">OpenG2P Country Dashboard sheet</a></p>
   </footer>
 
-<script src="script.js?v=4"></script>
+<script src="script.js?v=49"></script>
 </body>
 </html>
